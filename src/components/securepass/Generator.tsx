@@ -149,7 +149,7 @@ export function Generator() {
                 max={32}
                 step={1}
                 value={[options.length]}
-                onValueChange={([value]) => setOptions((o) => ({ ...o, length: value }))}
+                onValueChange={(value) => setOptions((o) => ({ ...o, length: value[0] ?? o.length }))}
               />
               <div className="mt-2 flex justify-between text-xs text-muted-foreground">
                 <span>6</span>
