@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Copy, Eye, EyeOff, KeyRound, Loader2, RefreshCw, Trash2, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { AnalysisCard } from "./AnalysisCard";
 import {
   analyzePassword,
   CHARSET_LABELS,
+  type Analysis,
   type CharsetKey,
   type GeneratorOptions,
 } from "@/lib/password";
@@ -29,9 +30,9 @@ export function Generator() {
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(true);
   const [history, setHistory] = useState<{ value: string; at: string }[]>([]);
+  const [analysis, setAnalysis] = useState<Analysis>(() => analyzePassword(""));
 
   const anyCharset = CHARSET_KEYS.some((key) => options[key]);
-  const analysis = useMemo(() => analyzePassword(password), [password]);
 
   const generate = useCallback(
     async (opts: GeneratorOptions, silent = false) => {
@@ -40,10 +41,14 @@ export function Generator() {
         return;
       }
       setLoading(true);
-      const { password: next } = await requestPassword(opts);
-      // Small delay keeps the loading animation legible.
-      await new Promise((resolve) => setTimeout(resolve, 260));
+      const [result] = await Promise.all([
+        requestPassword(opts),
+        // Small delay keeps the loading animation legible.
+        new Promise((resolve) => setTimeout(resolve, 260)),
+      ]);
+      const next = result.analysis.password;
       setPassword(next);
+      setAnalysis(result.analysis);
       setHistory((prev) =>
         [
           { value: next, at: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
@@ -51,7 +56,11 @@ export function Generator() {
         ].slice(0, 6),
       );
       setLoading(false);
-      if (!silent) toast.success("New secure password generated");
+      if (result.error) {
+        toast.error(result.error, { description: "Using on-device generation instead." });
+      } else if (!silent) {
+        toast.success("New secure password generated");
+      }
     },
     [],
   );
