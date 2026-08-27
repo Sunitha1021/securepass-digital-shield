@@ -1,16 +1,45 @@
-import { useMemo, useState } from "react";
-import { Eye, EyeOff, Lock, ShieldAlert } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Eye, EyeOff, Loader2, Lock, ShieldAlert } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { analyzePassword } from "@/lib/password";
+import { analyzePassword, type Analysis } from "@/lib/password";
+import { requestAnalysis } from "@/lib/api";
+import { toast } from "sonner";
 import { AnalysisCard } from "./AnalysisCard";
 import { StrengthMeter } from "./StrengthMeter";
 
 export function Checker() {
   const [value, setValue] = useState("");
   const [visible, setVisible] = useState(false);
-  const analysis = useMemo(() => analyzePassword(value), [value]);
+  const [loading, setLoading] = useState(false);
+  const [analysis, setAnalysis] = useState<Analysis>(() => analyzePassword(""));
+
+  // Debounced POST /analyze-password. Passwords are sent to the analysis
+  // endpoint only and are never persisted anywhere.
+  useEffect(() => {
+    if (!value) {
+      setLoading(false);
+      setAnalysis(analyzePassword(""));
+      return;
+    }
+    let active = true;
+    setLoading(true);
+    const timer = setTimeout(() => {
+      void requestAnalysis(value).then((result) => {
+        if (!active) return;
+        setAnalysis(result.analysis);
+        setLoading(false);
+        if (result.error) {
+          toast.error(result.error, { description: "Showing on-device analysis instead." });
+        }
+      });
+    }, 400);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [value]);
 
   const checks = [
     { label: "Uppercase letters", ok: analysis.hasUppercase },
@@ -60,6 +89,11 @@ export function Checker() {
 
             <div className="mt-7">
               <StrengthMeter score={analysis.score} label={analysis.label} />
+              {loading && (
+                <p className="mt-3 inline-flex items-center gap-2 text-xs text-muted-foreground">
+                  <Loader2 className="size-3.5 animate-spin" /> Analyzing password…
+                </p>
+              )}
             </div>
 
             <ul className="mt-7 grid gap-2 sm:grid-cols-2">
