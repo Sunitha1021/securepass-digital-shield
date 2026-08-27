@@ -45,11 +45,15 @@ function randomInt(max: number): number {
     let value = 0;
     do {
       globalThis.crypto.getRandomValues(buf);
-      value = buf[0];
+      value = buf[0] ?? 0;
     } while (value >= limit);
     return value % max;
   }
   return Math.floor(Math.random() * max);
+}
+
+function pick(set: string): string {
+  return set.charAt(randomInt(set.length));
 }
 
 export function generatePassword(options: GeneratorOptions): string {
@@ -57,23 +61,24 @@ export function generatePassword(options: GeneratorOptions): string {
   if (active.length === 0) return "";
 
   const pool = active.map((key) => CHARSETS[key]).join("");
-  const chars: string[] = active.map((key) => {
-    const set = CHARSETS[key];
-    return set[randomInt(set.length)];
-  });
+  const chars: string[] = active.map((key) => pick(CHARSETS[key]));
 
   for (let i = chars.length; i < options.length; i += 1) {
-    chars.push(pool[randomInt(pool.length)]);
+    chars.push(pick(pool));
   }
 
   // Fisher-Yates shuffle so the guaranteed characters aren't always first.
   for (let i = chars.length - 1; i > 0; i -= 1) {
     const j = randomInt(i + 1);
-    [chars[i], chars[j]] = [chars[j], chars[i]];
+    const a = chars[i] as string;
+    const b = chars[j] as string;
+    chars[i] = b;
+    chars[j] = a;
   }
 
   return chars.slice(0, options.length).join("");
 }
+
 
 export function scoreToLabel(score: number): StrengthLabel {
   if (score < 35) return "Weak";

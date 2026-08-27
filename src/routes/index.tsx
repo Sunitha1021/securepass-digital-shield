@@ -1,24 +1,49 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { AuroraBackground } from "@/components/securepass/AuroraBackground";
+import { Navbar } from "@/components/securepass/Navbar";
+import { Hero } from "@/components/securepass/Hero";
+import { Generator } from "@/components/securepass/Generator";
+import { Checker } from "@/components/securepass/Checker";
+import { Features } from "@/components/securepass/Features";
+import { HowItWorks } from "@/components/securepass/HowItWorks";
+import { Footer } from "@/components/securepass/Footer";
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "SecurePass — Smart Password Generator & Strength Checker" },
+      {
+        name: "description",
+        content:
+          "Generate cryptographically strong passwords and analyze password strength instantly. Entropy scoring, crack-time estimates, and privacy-first local processing.",
+      },
+      { property: "og:title", content: "SecurePass — Smart Password Generator" },
+      {
+        property: "og:description",
+        content:
+          "Premium password generator and strength analyzer with entropy scoring and crack-time estimates. Nothing ever leaves your device.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="relative min-h-screen overflow-x-hidden">
+      <AuroraBackground />
+      <Navbar />
+      <main>
+        <Hero />
+        <Generator />
+        <Checker />
+        <Features />
+        <HowItWorks />
+      </main>
+      <Footer />
     </div>
   );
 }
