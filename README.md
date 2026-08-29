@@ -12,11 +12,14 @@ Built with **React, TypeScript, Tailwind CSS, and Python FastAPI**, SecurePass d
 
 ## 🔗 Project Links
 
-| Resource               | Link                                                                                                      |
-| ---------------------- | --------------------------------------------------------------------------------------------------------- |
-| 🌐 Live Website        | [SecurePass](https://securepass-digital-shield-fpj9q0e1u-ss8172127-6479.vercel.app/)                      |
-| 🎨 Frontend Repository | [securepass-digital-shield](https://github.com/Sunitha1021/securepass-digital-shield)                     |
-| ⚙️ Backend Repository  | [SecurePass-Smart-Password-Generator](https://github.com/Sunitha1021/SecurePass-Smart-Password-Generator) |
+| Resource               | Link                                                                   |
+| ---------------------- | ---------------------------------------------------------------------- |
+| 🌐 Live Website        | https://securepass-digital-shield-fpj9q0e1u-ss8172127-6479.vercel.app/ |
+| 🎨 Frontend Repository | https://github.com/Sunitha1021/securepass-digital-shield               |
+| ⚙️ Backend Repository  | https://github.com/Sunitha1021/SecurePass-Smart-Password-Generator     |
+| 🚀 Backend API         | https://securepass-api-k65f.onrender.com                               |
+| 📖 API Documentation   | https://securepass-api-k65f.onrender.com/docs                          |
+
 
 ---
 
